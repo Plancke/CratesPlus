@@ -19,7 +19,7 @@ public abstract class FlatConfigurableOpener extends Opener {
         super(plugin, name, async);
     }
 
-    protected File getOpenerConfigFile() {
+    private File getConfigFile() {
         File openersDir = new File(JavaPlugin.getPlugin(CratesPlus.class).getDataFolder(), "openers");
         if (!openersDir.exists())
             if (!openersDir.mkdirs())
@@ -36,11 +36,16 @@ public abstract class FlatConfigurableOpener extends Opener {
         return configurationFile;
     }
 
-    protected FileConfiguration getOpenerConfig() {
-        File file = getOpenerConfigFile();
-        if (file == null)
-            return null;
+    protected FileConfiguration getConfig() {
+        File file = getConfigFile();
+        if (file == null) return null;
         return YamlConfiguration.loadConfiguration(file);
+    }
+
+    protected void saveConfig(FileConfiguration data) throws IOException {
+        File file = getConfigFile();
+        if (file == null) return;
+        data.save(getConfigFile());
     }
 
 }

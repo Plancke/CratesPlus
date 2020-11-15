@@ -9,6 +9,7 @@ import plus.crates.CratesPlus;
 import plus.crates.opener.FlatConfigurableOpener;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class NoGUIOpener extends FlatConfigurableOpener {
     private boolean chestSound = true;
@@ -19,15 +20,16 @@ public class NoGUIOpener extends FlatConfigurableOpener {
 
     @Override
     public void doSetup() {
-        FileConfiguration config = getOpenerConfig();
+        FileConfiguration config = getConfig();
         if (config.isSet("Chest Sound")) {
             chestSound = config.getBoolean("Chest Sound", true);
         } else {
             config.set("Chest Sound", true);
+
             try {
-                config.save(getOpenerConfigFile());
+                saveConfig(config);
             } catch (IOException e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE, "Failed to save opener file", e);
             }
         }
     }

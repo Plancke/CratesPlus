@@ -14,9 +14,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import plus.crates.CratesPlus;
 import plus.crates.crates.Crate;
 import plus.crates.crates.Winning;
-import plus.crates.CratesPlus;
 import plus.crates.opener.FlatConfigurableOpener;
 import plus.crates.util.LegacyMaterial;
 
@@ -26,11 +26,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class BasicGUIOpener extends FlatConfigurableOpener implements Listener {
-    private CratesPlus cratesPlus;
-    private Map<UUID, Integer> tasks = new HashMap<>();
-    private Map<UUID, Inventory> guis = new HashMap<>();
+
+    private final Map<UUID, Integer> tasks = new HashMap<>();
+    private final Map<UUID, Inventory> guis = new HashMap<>();
     private int length = 5;
     private String rollingText = "Rolling...";
     private String winnerText = "Winner!";
@@ -38,48 +39,37 @@ public class BasicGUIOpener extends FlatConfigurableOpener implements Listener {
 
     public BasicGUIOpener(CratesPlus cratesPlus) {
         super(cratesPlus, "BasicGUI");
-        this.cratesPlus = cratesPlus;
     }
 
     @Override
     public void doSetup() {
-        FileConfiguration config = getOpenerConfig();
+        boolean dirty = false;
+
+        CratesPlus cratesPlus = (CratesPlus) plugin;
+
+        FileConfiguration config = getConfig();
         if (!config.isSet("Length")) {
             config.set("Length", cratesPlus.getConfigHandler().getCrateGUITime());
-            try {
-                config.save(getOpenerConfigFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            dirty = true;
         }
-
         if (!config.isSet("Rolling Text")) {
             config.set("Rolling Text", "Rolling...");
-            try {
-                config.save(getOpenerConfigFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            dirty = true;
         }
-
         if (!config.isSet("Winner Text")) {
             config.set("Winner Text", "Winner!");
-            try {
-                config.save(getOpenerConfigFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            dirty = true;
         }
-
         if (!config.isSet("Sound")) {
             config.set("Sound", true);
+            dirty = true;
+        }
+
+        if (dirty) {
             try {
-                config.save(getOpenerConfigFile());
+                saveConfig(config);
             } catch (IOException e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.SEVERE, "Failed to save opener file", e);
                 return;
             }
         }
@@ -93,6 +83,8 @@ public class BasicGUIOpener extends FlatConfigurableOpener implements Listener {
 
     @Override
     public void doOpen(final Player player, final Crate crate, Location blockLocation) {
+        CratesPlus cratesPlus = (CratesPlus) plugin;
+
         final Inventory winGUI;
         final int[] timer = {0};
         final int[] currentItem = new int[1];
