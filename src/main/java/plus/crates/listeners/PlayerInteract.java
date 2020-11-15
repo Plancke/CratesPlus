@@ -8,9 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import plus.crates.CratesPlus;
 import plus.crates.crates.Crate;
 import plus.crates.crates.KeyCrate;
-import plus.crates.CratesPlus;
 import plus.crates.events.CrateOpenEvent;
 import plus.crates.handlers.MessageHandler;
 

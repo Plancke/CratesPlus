@@ -17,9 +17,9 @@ import plus.crates.listeners.BlockListeners;
 import plus.crates.listeners.GUIListeners;
 import plus.crates.listeners.PlayerInteract;
 import plus.crates.listeners.PlayerJoin;
-import plus.crates.util.*;
 import plus.crates.storage.FlatStorageHandler;
 import plus.crates.storage.IStorageHandler;
+import plus.crates.util.*;
 
 import java.io.*;
 import java.util.ArrayList;

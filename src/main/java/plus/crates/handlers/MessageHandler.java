@@ -3,9 +3,9 @@ package plus.crates.handlers;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import plus.crates.CratesPlus;
 import plus.crates.crates.Crate;
 import plus.crates.crates.Winning;
-import plus.crates.CratesPlus;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class MessageHandler {
     private static CratesPlus cratesPlus;
     private static YamlConfiguration config;
     private static File file;
-    private static HashMap<String, String> messages = new HashMap<>();
+    private static final HashMap<String, String> messages = new HashMap<>();
     public static boolean testMessages = false;
 
     public static void loadMessageConfiguration(CratesPlus cratesPlus, YamlConfiguration config, File file) {

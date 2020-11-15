@@ -23,7 +23,7 @@ public class DropCrate extends SupplyCrate implements Listener {
     private List<String> worlds = new ArrayList<>();
     private int minSpawnInterval = 60 * 60; // 1 Hour
     private int maxSpawnInterval = 120 * 60; // 2 Hours
-    private int radiusClosestToPlayer = 300; // will spawn 300 blocks close to a player TODO Make this and any others configurable!
+    private final int radiusClosestToPlayer = 300; // will spawn 300 blocks close to a player TODO Make this and any others configurable!
     private int despawnTimer = 30 * 60; // will despawn after 30 minutes if nobody has found it
     private int minPlayers = 2;
 

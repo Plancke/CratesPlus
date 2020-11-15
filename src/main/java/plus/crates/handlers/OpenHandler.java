@@ -1,10 +1,10 @@
 package plus.crates.handlers;
 
-import plus.crates.crates.Crate;
 import plus.crates.CratesPlus;
+import plus.crates.crates.Crate;
+import plus.crates.opener.Opener;
 import plus.crates.opener.impl.BasicGUIOpener;
 import plus.crates.opener.impl.NoGUIOpener;
-import plus.crates.opener.Opener;
 import plus.crates.opener.impl.SupplyOpener;
 
 import java.util.HashMap;
@@ -13,9 +13,9 @@ import java.util.HashMap;
  * Public handler for CratesPlus to be able to modify the way crates open.
  */
 public class OpenHandler {
-    private CratesPlus cratesPlus;
-    private HashMap<String, Opener> registered = new HashMap<>();
-    private HashMap<String, String> defaults = new HashMap<>();
+    private final CratesPlus cratesPlus;
+    private final HashMap<String, Opener> registered = new HashMap<>();
+    private final HashMap<String, String> defaults = new HashMap<>();
 
     public OpenHandler(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;

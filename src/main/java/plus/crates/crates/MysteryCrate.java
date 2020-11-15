@@ -57,22 +57,14 @@ public class MysteryCrate extends Crate {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 final int finalI = i;
-                gui.addItem(itemStack, new GUI.ClickHandler() {
-                    @Override
-                    public void doClick(Player player, GUI gui) {
-                        player.sendMessage(ChatColor.YELLOW + "// TODO");
-                        player.sendMessage(ChatColor.AQUA + "#" + finalI);
-                    }
+                gui.addItem(itemStack, (player1, gui1) -> {
+                    player1.sendMessage(ChatColor.YELLOW + "// TODO");
+                    player1.sendMessage(ChatColor.AQUA + "#" + finalI);
                 });
             }
         }
 
-        gui.setGoBackHandler(new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                player.closeInventory();
-            }
-        });
+        gui.setGoBackHandler((player12, gui12) -> player12.closeInventory());
         gui.open(player);
     }
 

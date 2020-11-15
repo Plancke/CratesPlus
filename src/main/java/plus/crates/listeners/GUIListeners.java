@@ -29,20 +29,15 @@ public class GUIListeners implements Listener {
             GUI.ignoreClosing.remove(event.getPlayer().getUniqueId());
             return;
         }
-        if (GUI.guis.containsKey(event.getPlayer().getUniqueId()))
-            GUI.guis.remove(event.getPlayer().getUniqueId());
-        if (GUI.pageTracker.containsKey(event.getPlayer().getUniqueId()))
-            GUI.pageTracker.remove(event.getPlayer().getUniqueId());
+        GUI.guis.remove(event.getPlayer().getUniqueId());
+        GUI.pageTracker.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (GUI.ignoreClosing.contains(event.getPlayer().getUniqueId()))
-            GUI.ignoreClosing.remove(event.getPlayer().getUniqueId());
-        if (GUI.guis.containsKey(event.getPlayer().getUniqueId()))
-            GUI.guis.remove(event.getPlayer().getUniqueId());
-        if (GUI.pageTracker.containsKey(event.getPlayer().getUniqueId()))
-            GUI.pageTracker.remove(event.getPlayer().getUniqueId());
+        GUI.ignoreClosing.remove(event.getPlayer().getUniqueId());
+        GUI.guis.remove(event.getPlayer().getUniqueId());
+        GUI.pageTracker.remove(event.getPlayer().getUniqueId());
     }
 
 }

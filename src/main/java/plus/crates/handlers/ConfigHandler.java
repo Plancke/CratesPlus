@@ -1,9 +1,9 @@
 package plus.crates.handlers;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import plus.crates.CratesPlus;
 import plus.crates.configs.*;
 import plus.crates.crates.*;
-import plus.crates.CratesPlus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ public class ConfigHandler {
     private Integer defaultCooldown = 5;
     private Integer crateGUITime = 10;
     private Integer claimMessageDelay = 0;
-    private List<String> defaultHologramText;
-    private HashMap<String, List<String>> holograms = new HashMap<>();
+    private final List<String> defaultHologramText;
+    private final HashMap<String, List<String>> holograms = new HashMap<>();
     private HashMap<String, Crate> crates = new HashMap<>();
     private boolean disableKeySwapping = false;
     private boolean debugMode = false;
-    private List<ConfigVersion> configVersions = new ArrayList<>();
+    private final List<ConfigVersion> configVersions = new ArrayList<>();
 
     public ConfigHandler(FileConfiguration config, CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;

@@ -3,9 +3,7 @@ package plus.crates.events;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import plus.crates.util.SignInputHandler;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

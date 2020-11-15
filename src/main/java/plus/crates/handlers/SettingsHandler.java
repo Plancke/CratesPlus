@@ -8,9 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import plus.crates.CratesPlus;
 import plus.crates.crates.Crate;
 import plus.crates.crates.Winning;
-import plus.crates.CratesPlus;
 import plus.crates.events.PlayerInputEvent;
 import plus.crates.util.GUI;
 import plus.crates.util.LegacyMaterial;
@@ -21,11 +21,11 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class SettingsHandler implements Listener {
-    private HashMap<UUID, String> renaming = new HashMap<>();
-    private CratesPlus cratesPlus;
+    private final Map<UUID, String> renaming = new HashMap<>();
+    private final CratesPlus cratesPlus;
     private GUI settings;
     private GUI crates;
-    private HashMap<String, String> lastCrateEditing = new HashMap<>();
+    private final Map<String, String> lastCrateEditing = new HashMap<>();
 
     public SettingsHandler(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;
@@ -48,12 +48,9 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        settings.setItem(1, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                GUI.ignoreClosing.add(player.getUniqueId());
-                openCrates(player);
-            }
+        settings.setItem(1, itemStack, (player, gui) -> {
+            GUI.ignoreClosing.add(player.getUniqueId());
+            openCrates(player);
         });
 
         Material material;
@@ -70,13 +67,10 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        settings.setItem(5, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                player.closeInventory();
-                cratesPlus.reloadConfig();
-                player.sendMessage(ChatColor.GREEN + "Reloaded config");
-            }
+        settings.setItem(5, itemStack, (player, gui) -> {
+            player.closeInventory();
+            cratesPlus.reloadConfig();
+            player.sendMessage(ChatColor.GREEN + "Reloaded config");
         });
     }
 
@@ -94,12 +88,9 @@ public class SettingsHandler implements Listener {
             itemMeta.setDisplayName(crate.getName(true));
             itemStack.setItemMeta(itemMeta);
             final String crateName = crate.getName();
-            crates.addItem(itemStack, new GUI.ClickHandler() {
-                @Override
-                public void doClick(Player player, GUI gui) {
-                    GUI.ignoreClosing.add(player.getUniqueId());
-                    openCrate(player, crateName);
-                }
+            crates.addItem(itemStack, (player, gui) -> {
+                GUI.ignoreClosing.add(player.getUniqueId());
+                openCrate(player, crateName);
             });
         }
     }
@@ -157,25 +148,22 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        gui.setItem(0, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                player.closeInventory();
-                renaming.put(player.getUniqueId(), crateName);
-                try {
-                    //Send fake sign cause 1.13
-                    player.sendBlockChange(player.getLocation(), Material.valueOf("SIGN"), (byte) 0);
+        gui.setItem(0, itemStack, (player1, gui1) -> {
+            player1.closeInventory();
+            renaming.put(player1.getUniqueId(), crateName);
+            try {
+                //Send fake sign cause 1.13
+                player1.sendBlockChange(player1.getLocation(), Material.valueOf("SIGN"), (byte) 0);
 
-                    Constructor signConstructor = ReflectionUtil.getNMSClass("PacketPlayOutOpenSignEditor").getConstructor(ReflectionUtil.getNMSClass("BlockPosition"));
-                    Object packet = signConstructor.newInstance(ReflectionUtil.getBlockPosition(player));
-                    SignInputHandler.injectNetty(player);
-                    ReflectionUtil.sendPacket(player, packet);
+                Constructor signConstructor = ReflectionUtil.getNMSClass("PacketPlayOutOpenSignEditor").getConstructor(ReflectionUtil.getNMSClass("BlockPosition"));
+                Object packet = signConstructor.newInstance(ReflectionUtil.getBlockPosition(player1));
+                SignInputHandler.injectNetty(player1);
+                ReflectionUtil.sendPacket(player1, packet);
 
-                    player.sendBlockChange(player.getLocation(), player.getLocation().getBlock().getType(), player.getLocation().getBlock().getData());
-                } catch (Exception e) {
-                    player.sendMessage(cratesPlus.getPluginPrefix() + ChatColor.RED + "Please use /crate rename <old> <new>");
-                    renaming.remove(player.getUniqueId());
-                }
+                player1.sendBlockChange(player1.getLocation(), player1.getLocation().getBlock().getType(), player1.getLocation().getBlock().getData());
+            } catch (Exception e) {
+                player1.sendMessage(cratesPlus.getPluginPrefix() + ChatColor.RED + "Please use /crate rename <old> <new>");
+                renaming.remove(player1.getUniqueId());
             }
         });
 
@@ -189,13 +177,10 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        gui.setItem(2, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                player.sendMessage(ChatColor.RED + "This feature is currently disabled!");
+        gui.setItem(2, itemStack, (player12, gui12) -> {
+            player12.sendMessage(ChatColor.RED + "This feature is currently disabled!");
 //                GUI.ignoreClosing.add(player.getUniqueId());
 //                openCrateWinnings(player, crateName);
-            }
         });
 
 
@@ -208,12 +193,9 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        gui.setItem(4, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                GUI.ignoreClosing.add(player.getUniqueId());
-                openCrateColor(player, crate);
-            }
+        gui.setItem(4, itemStack, (player13, gui13) -> {
+            GUI.ignoreClosing.add(player13.getUniqueId());
+            openCrateColor(player13, crate);
         });
 
 
@@ -234,12 +216,9 @@ public class SettingsHandler implements Listener {
         lore.add("");
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
-        gui.setItem(6, itemStack, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                GUI.ignoreClosing.add(player.getUniqueId());
-                confirmDelete(player, crate);
-            }
+        gui.setItem(6, itemStack, (player14, gui14) -> {
+            GUI.ignoreClosing.add(player14.getUniqueId());
+            confirmDelete(player14, crate);
         });
 
         Bukkit.getScheduler().runTaskLater(cratesPlus, () -> gui.open(player), 1L);
@@ -349,14 +328,11 @@ public class SettingsHandler implements Listener {
     }
 
     private GUI.ClickHandler getColorClickHandler(Crate crate, ChatColor color) {
-        return new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                GUI.ignoreClosing.add(player.getUniqueId());
-                crate.setColor(color);
-                player.sendMessage(color.name());
-                openCrate(player, crate.getName());
-            }
+        return (player, gui) -> {
+            GUI.ignoreClosing.add(player.getUniqueId());
+            crate.setColor(color);
+            player.sendMessage(color.name());
+            openCrate(player, crate.getName());
         };
     }
 
@@ -373,30 +349,24 @@ public class SettingsHandler implements Listener {
         ItemMeta cancelMeta = cancel.getItemMeta();
         cancelMeta.setDisplayName(ChatColor.RED + "Cancel");
         cancel.setItemMeta(cancelMeta);
-        gui.setItem(16, cancel, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                GUI.ignoreClosing.add(player.getUniqueId());
-                openCrate(player, crate.getName(false));
-            }
+        gui.setItem(16, cancel, (player12, gui12) -> {
+            GUI.ignoreClosing.add(player12.getUniqueId());
+            openCrate(player12, crate.getName(false));
         });
 
         ItemStack confirm = new ItemStack(LegacyMaterial.WOOL.getMaterial(), 1, (short) 5);
         ItemMeta confirmMeta = confirm.getItemMeta();
         confirmMeta.setDisplayName(ChatColor.GREEN + "Confirm");
         confirm.setItemMeta(confirmMeta);
-        gui.setItem(18, confirm, new GUI.ClickHandler() {
-            @Override
-            public void doClick(Player player, GUI gui) {
-                player.closeInventory();
-                player.sendMessage("WILL DELETE");
-            }
+        gui.setItem(18, confirm, (player1, gui1) -> {
+            player1.closeInventory();
+            player1.sendMessage("WILL DELETE");
         });
 
         gui.open(player);
     }
 
-    public HashMap<String, String> getLastCrateEditing() {
+    public Map<String, String> getLastCrateEditing() {
         return lastCrateEditing;
     }
 
@@ -414,12 +384,12 @@ public class SettingsHandler implements Listener {
             cratesPlus.getSettingsHandler().openCrate(event.getPlayer(), newName);
         } else if (cratesPlus.isCreating(event.getPlayer().getUniqueId())) {
             cratesPlus.removeCreating(event.getPlayer().getUniqueId());
-            String name = "";
+            StringBuilder name = new StringBuilder();
             for (String line : event.getLines()) {
-                name += line;
+                name.append(line);
             }
-            if (!name.isEmpty()) {
-                final String finalName = name;
+            if (name.length() > 0) {
+                final String finalName = name.toString();
                 Bukkit.getScheduler().runTask(cratesPlus, () -> Bukkit.dispatchCommand(event.getPlayer(), "crate create " + finalName));
             }
         }

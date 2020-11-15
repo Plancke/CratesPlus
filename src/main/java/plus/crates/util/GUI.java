@@ -203,8 +203,8 @@ public class GUI {
         player.openInventory(create(page));
     }
 
-    public abstract static class ClickHandler {
-        public abstract void doClick(Player player, GUI gui);
+    public interface ClickHandler {
+        void doClick(Player player, GUI gui);
     }
 
 }

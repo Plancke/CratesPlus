@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import plus.crates.crates.Crate;
 import plus.crates.CratesPlus;
+import plus.crates.crates.Crate;
 import plus.crates.opener.FlatConfigurableOpener;
 
 import java.io.IOException;

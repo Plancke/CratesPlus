@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import plus.crates.crates.Crate;
 import plus.crates.util.LinfootUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class IndividualHologramsHologram implements Hologram {

@@ -15,8 +15,8 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import plus.crates.crates.*;
 import plus.crates.CratesPlus;
+import plus.crates.crates.*;
 import plus.crates.events.CrateOpenEvent;
 import plus.crates.handlers.MessageHandler;
 
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BlockListeners implements Listener {
-    private CratesPlus cratesPlus;
+    private final CratesPlus cratesPlus;
 
     public BlockListeners(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;
