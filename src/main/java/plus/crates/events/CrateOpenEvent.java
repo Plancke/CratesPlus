@@ -4,16 +4,17 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import plus.crates.CratesPlus;
 import plus.crates.crates.Crate;
 import plus.crates.crates.VirtualCrate;
-import plus.crates.CratesPlus;
 
 public class CrateOpenEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
-    private CratesPlus cratesPlus;
-    private Player player;
-    private Crate crate;
-    private Location blockLocation;
+
+    private final CratesPlus cratesPlus;
+    private final Player player;
+    private final Crate crate;
+    private final Location blockLocation;
 
     public CrateOpenEvent(Player player, Crate crate, Location blockLocation, CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;

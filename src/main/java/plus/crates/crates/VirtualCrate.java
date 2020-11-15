@@ -9,9 +9,10 @@ import plus.crates.util.GUI;
 import plus.crates.util.LinfootUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VirtualCrate extends Crate {
-    private ArrayList<String> crates = new ArrayList<>();
+    private final List<String> crates = new ArrayList<>();
 
     public VirtualCrate(ConfigHandler configHandler, String name) {
         super(configHandler, name);

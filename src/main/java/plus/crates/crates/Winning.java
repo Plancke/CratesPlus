@@ -31,7 +31,6 @@ public class Winning {
     private ItemStack previewItemStack;
     private ItemStack winningItemStack;
     private List<String> commands = new ArrayList<>();
-    private final List<String> lore = new ArrayList<>();
     private String entityType = "";
 
     public Winning(Crate crate, String path, CratesPlus cratesPlus, ConfigHandler configHandler) {
@@ -74,7 +73,7 @@ public class Winning {
             if (config.isSet(path + ".Percentage"))
                 percentage = config.getDouble(path + ".Percentage");
 
-            Integer amount = 1;
+            int amount = 1;
             if (config.isSet(path + ".Amount"))
                 amount = config.getInt(path + ".Amount");
 
@@ -111,7 +110,7 @@ public class Winning {
             if (config.isSet(path + ".Percentage"))
                 percentage = config.getDouble(path + ".Percentage");
 
-            Integer amount = 1;
+            int amount = 1;
             if (config.isSet(path + ".Amount"))
                 amount = config.getInt(path + ".Amount");
 
@@ -163,10 +162,11 @@ public class Winning {
             }
         }
 
+        List<String> lore1 = new ArrayList<>();
         if (config.isSet(path + ".Lore")) {
             List<String> lines = config.getStringList(path + ".Lore");
             for (String line : lines) {
-                this.lore.add(ChatColor.translateAlternateColorCodes('&', line));
+                lore1.add(ChatColor.translateAlternateColorCodes('&', line));
             }
         }
 
@@ -184,7 +184,7 @@ public class Winning {
             displayName = ChatColor.translateAlternateColorCodes('&', config.getString(path + ".Name"));
         if (!displayName.equals(""))
             winningItemStackItemMeta.setDisplayName(displayName);
-        winningItemStackItemMeta.setLore(this.lore);
+        winningItemStackItemMeta.setLore(lore1);
         winningItemStack.setItemMeta(winningItemStackItemMeta);
 
         if (config.isSet(path + ".Enchantments")) {
@@ -206,7 +206,7 @@ public class Winning {
         this.winningItemStack = winningItemStack;
 
         previewItemStackItemMeta = previewItemStack.getItemMeta();
-        List<String> lore = new ArrayList<>(this.lore);
+        List<String> lore = new ArrayList<>(lore1);
         if (percentage > 0 && !crate.isHidePercentages()) {
             if (cratesPlus.getConfig().getBoolean("Chance Message Gap", true))
                 lore.add(ChatColor.LIGHT_PURPLE + "");

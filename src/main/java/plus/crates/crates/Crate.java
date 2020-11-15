@@ -104,14 +104,6 @@ public abstract class Crate {
         return this.name;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
     public void setColor(ChatColor color) {
         this.color = color;
         String path = "Crates." + name + ".Color";
@@ -160,12 +152,12 @@ public abstract class Crate {
         return broadcast;
     }
 
-    public ArrayList<Winning> getWinnings() {
+    public List<Winning> getWinnings() {
         return winnings;
     }
 
-    public ArrayList<Winning> getWinningsExcludeAlways() {
-        ArrayList<Winning> winningsExcludeAlways = new ArrayList<>();
+    public List<Winning> getWinningsExcludeAlways() {
+        List<Winning> winningsExcludeAlways = new ArrayList<>();
         for (Winning winning : getWinnings()) {
             if (!winning.isAlways())
                 winningsExcludeAlways.add(winning);

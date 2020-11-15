@@ -2,6 +2,7 @@ package plus.crates.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -148,6 +149,10 @@ public class LinfootUtil {
             case 17:
                 return Color.YELLOW;
         }
+    }
+
+    public static String formatLocation(Location location) {
+        return location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ();
     }
 
 }

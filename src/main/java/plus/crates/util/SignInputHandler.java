@@ -67,7 +67,10 @@ public class SignInputHandler {
                                 if (lines.isEmpty()) {
                                     player.sendMessage(ChatColor.RED + "Unable to handle input");
                                 } else {
-                                    Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CratesPlus.class), () -> Bukkit.getPluginManager().callEvent(new PlayerInputEvent(player, lines)));
+                                    Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CratesPlus.class), () -> {
+                                        Bukkit.getPluginManager().callEvent(new PlayerInputEvent(player, lines));
+                                        SignInputHandler.ejectNetty(player);
+                                    });
                                 }
                             }
 

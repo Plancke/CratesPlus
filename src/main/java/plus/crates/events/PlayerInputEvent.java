@@ -6,16 +6,18 @@ import org.bukkit.event.HandlerList;
 import plus.crates.util.SignInputHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PlayerInputEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
-    private Player player;
-    public ArrayList<String> lines;
 
-    public PlayerInputEvent(Player player, ArrayList<String> lines) {
+    private final Player player;
+    private final List<String> lines;
+
+    public PlayerInputEvent(Player player, List<String> lines) {
         this.player = player;
         this.lines = lines;
-        SignInputHandler.ejectNetty(player);
     }
 
     @Override
@@ -31,8 +33,8 @@ public class PlayerInputEvent extends Event {
         return player;
     }
 
-    public ArrayList<String> getLines() {
-        return lines;
+    public List<String> getLines() {
+        return Collections.unmodifiableList(lines);
     }
 
 }

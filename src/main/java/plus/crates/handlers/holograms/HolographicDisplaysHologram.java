@@ -3,25 +3,29 @@ package plus.crates.handlers.holograms;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Location;
 import plus.crates.crates.Crate;
+import plus.crates.util.LinfootUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HolographicDisplaysHologram implements Hologram {
-    private HashMap<String, com.gmail.filoghost.holographicdisplays.api.Hologram> holograms = new HashMap<>();
+    private final Map<String, com.gmail.filoghost.holographicdisplays.api.Hologram> holograms = new HashMap<>();
 
-    public void create(Location location, Crate crate, ArrayList<String> lines) {
+    public void create(Location location, Crate crate, List<String> lines) {
         com.gmail.filoghost.holographicdisplays.api.Hologram hologram = HologramsAPI.createHologram(crate.getCratesPlus(), location.clone().add(0, 1.25, 0));
         for (String line : lines) {
             hologram.appendTextLine(line);
         }
-        holograms.put("" + location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ(), hologram);
+
+        holograms.put(LinfootUtil.formatLocation(location), hologram);
     }
 
     public void remove(Location location, Crate crate) {
-        if (holograms.containsKey("" + location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ())) {
-            holograms.get("" + location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ()).delete();
-            holograms.remove("" + location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ());
+        String formatLocation = LinfootUtil.formatLocation(location);
+        if (holograms.containsKey(formatLocation)) {
+            holograms.get(formatLocation).delete();
+            holograms.remove(formatLocation);
         }
     }
 

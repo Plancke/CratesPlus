@@ -3,6 +3,7 @@ package plus.crates.storage;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import plus.crates.CratesPlus;
+import plus.crates.util.LinfootUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +97,7 @@ public class FlatStorageHandler implements IStorageHandler {
         try {
             List<String> locations = getLocations(crate);
 
-            if (locations != null) locations.remove(formatLocation(location));
+            if (locations != null) locations.remove(LinfootUtil.formatLocation(location));
 
             flatConfig.set("Crate Locations." + crate, locations);
             saveFlat();
@@ -114,7 +115,7 @@ public class FlatStorageHandler implements IStorageHandler {
         try {
             List<String> locations = getLocations(crate);
 
-            if (locations != null) locations.remove(formatLocation(location));
+            if (locations != null) locations.remove(LinfootUtil.formatLocation(location));
 
             flatConfig.set("Crate Locations." + crate, locations);
             saveFlat();
@@ -131,10 +132,6 @@ public class FlatStorageHandler implements IStorageHandler {
         String key = "Crate Locations." + crate;
         if (flatConfig.isSet(key)) return flatConfig.getStringList(key);
         return null;
-    }
-
-    private String formatLocation(Location location) {
-        return location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ();
     }
 
     @Override
