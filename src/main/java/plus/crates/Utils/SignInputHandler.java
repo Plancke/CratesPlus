@@ -32,13 +32,13 @@ public class SignInputHandler {
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
             final Channel channel = (Channel) channelField.get(playerConnection.getClass().getField("networkManager").get(playerConnection));
             if (channel != null) {
-                Class signPacketClass = ReflectionUtil.getNMSClass("PacketPlayInUpdateSign");
+                Class<?> signPacketClass = ReflectionUtil.getNMSClass("PacketPlayInUpdateSign");
                 channel.pipeline().addAfter("decoder", "update_sign", new MessageToMessageDecoder<Object>() {
                     @Override
                     protected void decode(ChannelHandlerContext channelHandlerContext, Object object, List list) {
                         try {
                             if (signPacketClass.isAssignableFrom(object.getClass())) {
-                                Class iChatBaseComponentClass = ReflectionUtil.getNMSClass("IChatBaseComponent");
+                                Class<?> iChatBaseComponentClass = ReflectionUtil.getNMSClass("IChatBaseComponent");
                                 Object packet = signPacketClass.cast(object);
                                 Method method = null;
 
@@ -70,6 +70,8 @@ public class SignInputHandler {
                                     Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CratesPlus.class), () -> Bukkit.getPluginManager().callEvent(new PlayerInputEvent(player, lines)));
                                 }
                             }
+
+                            //noinspection unchecked
                             list.add(object);
                         } catch (Exception e) {
                             e.printStackTrace();

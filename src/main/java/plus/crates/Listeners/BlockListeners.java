@@ -14,8 +14,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.metadata.FixedMetadataValue;
 import plus.crates.Crates.*;
 import plus.crates.CratesPlus;
 import plus.crates.Events.CrateOpenEvent;
@@ -209,62 +208,7 @@ public class BlockListeners implements Listener {
                 keyCrate.addLocation(location.getBlockX() + "-" + location.getBlockY() + "-" + location.getBlockZ(), location);
                 keyCrate.addToConfig(location);
                 // BlockMeta to be used for some stuff in the future!
-                event.getBlock().setMetadata("CrateType", new MetadataValue() {
-                    @Override
-                    public Object value() {
-                        return crate.getName(false);
-                    }
-
-                    @Override
-                    public int asInt() {
-                        return 0;
-                    }
-
-                    @Override
-                    public float asFloat() {
-                        return 0;
-                    }
-
-                    @Override
-                    public double asDouble() {
-                        return 0;
-                    }
-
-                    @Override
-                    public long asLong() {
-                        return 0;
-                    }
-
-                    @Override
-                    public short asShort() {
-                        return 0;
-                    }
-
-                    @Override
-                    public byte asByte() {
-                        return 0;
-                    }
-
-                    @Override
-                    public boolean asBoolean() {
-                        return false;
-                    }
-
-                    @Override
-                    public String asString() {
-                        return value().toString();
-                    }
-
-                    @Override
-                    public Plugin getOwningPlugin() {
-                        return cratesPlus;
-                    }
-
-                    @Override
-                    public void invalidate() {
-
-                    }
-                });
+                event.getBlock().setMetadata("CrateType", new FixedMetadataValue(cratesPlus, crateType));
 
                 Location location1 = location.getBlock().getLocation().add(0.5, 0.5, 0.5);
                 keyCrate.loadHolograms(location1);
@@ -274,13 +218,12 @@ public class BlockListeners implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getMetadata("CrateType") == null || event.getBlock().getMetadata("CrateType").isEmpty()) {
+        if (!event.getBlock().hasMetadata("CrateType") || event.getBlock().getMetadata("CrateType").isEmpty()) {
             return;
         }
         String crateType = event.getBlock().getMetadata("CrateType").get(0).asString();
         Crate crate = cratesPlus.getConfigHandler().getCrates().get(crateType.toLowerCase());
-        if (crate == null) // TODO Better handling of crates removed from the config
-            return;
+        if (crate == null) return;
         if (!(crate instanceof KeyCrate)) {
             return;
         }

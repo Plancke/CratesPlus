@@ -3,27 +3,26 @@ package plus.crates;
 import com.google.common.io.ByteStreams;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import plus.crates.Commands.CrateCommand;
-import plus.crates.Crates.Crate;
-import plus.crates.Crates.KeyCrate;
 import plus.crates.Handlers.*;
 import plus.crates.Listeners.BlockListeners;
 import plus.crates.Listeners.GUIListeners;
 import plus.crates.Listeners.PlayerInteract;
 import plus.crates.Listeners.PlayerJoin;
 import plus.crates.Utils.*;
+import plus.crates.storage.FlatStorageHandler;
+import plus.crates.storage.IStorageHandler;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -39,7 +38,7 @@ public class CratesPlus extends JavaPlugin implements Listener {
     private CrateHandler crateHandler;
     private SettingsHandler settingsHandler;
     private HologramHandler hologramHandler;
-    private StorageHandler storageHandler;
+    private IStorageHandler storageHandler;
     private String bukkitVersion = "0.0";
     private Version_Util version_util;
     private static OpenHandler openHandler;
@@ -89,13 +88,8 @@ public class CratesPlus extends JavaPlugin implements Listener {
 
         hologramHandler = new HologramHandler();
 
-        StorageHandler.StorageType storageType = StorageHandler.StorageType.FLAT;
-        try {
-            storageType = StorageHandler.StorageType.valueOf(getConfig().getString("Storage Type", "FLAT").toUpperCase());
-        } catch (Exception e) {
-            getLogger().warning(getConfig().getString("Storage Type", "FLAT") + " is not a valid storage type! Falling back to flat!");
-        }
-        storageHandler = new StorageHandler(this, storageType);
+        // TODO configurable
+        storageHandler = new FlatStorageHandler(this);
 
         // Load new messages.yml
         File messagesFile = new File(getDataFolder(), "messages.yml");
@@ -106,7 +100,7 @@ public class CratesPlus extends JavaPlugin implements Listener {
                 OutputStream outputStream = new FileOutputStream(messagesFile);
                 ByteStreams.copy(inputStream, outputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().log(Level.SEVERE, "Failed to load messages.yml", e);
             }
         }
 
@@ -145,8 +139,6 @@ public class CratesPlus extends JavaPlugin implements Listener {
         openHandler = new OpenHandler(this);
 
         settingsHandler = new SettingsHandler(this);
-
-        loadMetaData();
 
         console.sendMessage(ChatColor.AQUA + getDescription().getName() + " Version " + getDescription().getVersion());
         if (getDescription().getVersion().contains("SNAPSHOT")) { // Added this because some people didn't really understand what a "snapshot" is...
@@ -273,59 +265,6 @@ public class CratesPlus extends JavaPlugin implements Listener {
 
     }
 
-    private void loadMetaData() {
-        YamlConfiguration flatConfig = getStorageHandler().getFlatConfig();
-        if (!flatConfig.isSet("Crate Locations")) return;
-
-        //noinspection ConstantConditions
-        for (String name : flatConfig.getConfigurationSection("Crate Locations").getKeys(false)) {
-            Crate crate = configHandler.getCrate(name.toLowerCase());
-            if (crate == null) continue;
-
-            if (!(crate instanceof KeyCrate)) continue;
-            KeyCrate keyCrate = (KeyCrate) crate;
-            String path = "Crate Locations." + name;
-            List<String> locations = flatConfig.getStringList(path);
-
-            for (String location : locations) {
-                List<String> strings = Arrays.asList(location.split("\\|"));
-                if (strings.size() < 4) continue; // Somethings broke?
-                if (strings.size() > 4) {
-                    // Somethings broke? But we'll try and fix it!
-                    for (int i = 0; i < strings.size(); i++) {
-                        if (strings.get(i).isEmpty() || strings.get(i).equals("")) {
-                            strings.remove(i);
-                        }
-                    }
-                }
-
-                World world = Bukkit.getWorld(strings.get(0));
-                if (world == null) {
-                    getLogger().warning("No world found for " + strings);
-                    return; // TODO figure out how we wanna handle this
-                }
-                Location locationObj = new Location(
-                        world,
-                        Double.parseDouble(strings.get(1)),
-                        Double.parseDouble(strings.get(2)),
-                        Double.parseDouble(strings.get(3))
-                );
-                Block block = locationObj.getBlock();
-                if (block.getType().equals(Material.AIR)) {
-                    getLogger().warning("No block found at " + location + " removing from data.yml");
-                    keyCrate.removeFromConfig(locationObj);
-                    continue;
-                }
-                Location location1 = locationObj.getBlock().getLocation().add(0.5, 0.5, 0.5);
-                keyCrate.loadHolograms(location1);
-                final CratesPlus cratesPlus = this;
-                block.setMetadata("CrateType", new FixedMetadataValue(cratesPlus, crate.getName(false)));
-            }
-
-
-        }
-    }
-
     public SettingsHandler getSettingsHandler() {
         return settingsHandler;
     }
@@ -342,7 +281,7 @@ public class CratesPlus extends JavaPlugin implements Listener {
         return hologramHandler;
     }
 
-    public StorageHandler getStorageHandler() {
+    public IStorageHandler getStorageHandler() {
         return storageHandler;
     }
 

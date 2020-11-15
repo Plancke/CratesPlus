@@ -21,31 +21,18 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CrateHandler {
+
     private final CratesPlus cratesPlus;
+
     private final Map<UUID, Opener> openings = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> pendingKeys = new HashMap<>();
 
     public CrateHandler(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;
 
-        // Load in any pending keys from the data file
-        YamlConfiguration dataConfig = cratesPlus.getStorageHandler().getFlatConfig();
-
-        if (dataConfig.isSet("Claims")) {
-            for (String uuidStr : dataConfig.getConfigurationSection("Claims").getKeys(false)) {
-                UUID uuid = UUID.fromString(uuidStr);
-                HashMap<String, Integer> keys = new HashMap<>();
-                List<String> dataList = dataConfig.getStringList("Claims." + uuidStr);
-                for (String data : dataList) {
-                    String[] args = data.split("\\|");
-                    if (args.length == 1) {
-                        keys.put(args[0], 1);
-                    } else {
-                        keys.put(args[0], Integer.valueOf(args[1]));
-                    }
-                }
-                pendingKeys.put(uuid, keys);
-            }
+        Map<UUID, Map<String, Integer>> pendingKeysData = cratesPlus.getStorageHandler().getPendingKeys();
+        if (pendingKeysData != null) {
+            pendingKeys.putAll(pendingKeysData);
         }
     }
 
@@ -158,14 +145,8 @@ public class CrateHandler {
     }
 
     private void updateKeysData(UUID uuid) {
-        YamlConfiguration dataConfig = cratesPlus.getStorageHandler().getFlatConfig();
-        List<String> data = new ArrayList<>();
         Map<String, Integer> keys = pendingKeys.get(uuid);
-        for (Map.Entry<String, Integer> key : keys.entrySet()) {
-            data.add(key.getKey() + "|" + key.getValue());
-        }
-        dataConfig.set("Claims." + uuid.toString(), data);
-        cratesPlus.getStorageHandler().saveFlat();
+        cratesPlus.getStorageHandler().updateKeysData(uuid, keys);
     }
 
     @Deprecated

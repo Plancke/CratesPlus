@@ -22,8 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Winning {
-    private CratesPlus cratesPlus;
-    private Crate crate;
+    private final CratesPlus cratesPlus;
+    private final Crate crate;
     private boolean valid = false;
     private boolean command = false;
     private boolean always = false;
@@ -31,7 +31,7 @@ public class Winning {
     private ItemStack previewItemStack;
     private ItemStack winningItemStack;
     private List<String> commands = new ArrayList<>();
-    private List<String> lore = new ArrayList<>();
+    private final List<String> lore = new ArrayList<>();
     private String entityType = "";
 
     public Winning(Crate crate, String path, CratesPlus cratesPlus, ConfigHandler configHandler) {

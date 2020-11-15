@@ -85,7 +85,7 @@ public class DropCrate extends SupplyCrate implements Listener {
 
         Player player = world.getPlayers().get(ThreadLocalRandom.current().nextInt(world.getPlayers().size())); // Get random player to spawn crate near
         Location location = player.getLocation().clone();
-        double randomX = ThreadLocalRandom.current().nextInt((int) location.getX() - radiusClosestToPlayer, (int) location.getX() + radiusClosestToPlayer+1);
+        double randomX = ThreadLocalRandom.current().nextInt((int) location.getX() - radiusClosestToPlayer, (int) location.getX() + radiusClosestToPlayer + 1);
         double randomZ = ThreadLocalRandom.current().nextInt((int) location.getZ() - radiusClosestToPlayer, (int) location.getZ() + radiusClosestToPlayer + 1);
         location.setX(randomX);
         location.setZ(randomZ);

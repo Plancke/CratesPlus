@@ -84,26 +84,11 @@ public class KeyCrate extends Crate {
     }
 
     public void removeFromConfig(Location location) {
-        CratesPlus cratesPlus = getCratesPlus();
-
-        List<String> locations = new ArrayList<>();
-        if (cratesPlus.getStorageHandler().getFlatConfig().isSet("Crate Locations." + this.getName(false).toLowerCase()))
-            locations = cratesPlus.getStorageHandler().getFlatConfig().getStringList("Crate Locations." + this.getName(false).toLowerCase());
-        if (locations.contains(location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ()))
-            locations.remove(location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ());
-        cratesPlus.getStorageHandler().getFlatConfig().set("Crate Locations." + this.getName(false).toLowerCase(), locations);
-        cratesPlus.getStorageHandler().saveFlat();
+        getCratesPlus().getStorageHandler().removeCrateLocation(this.getName(false).toLowerCase(), location);
     }
 
     public void addToConfig(Location location) {
-        CratesPlus cratesPlus = getCratesPlus();
-
-        List<String> locations = new ArrayList<>();
-        if (cratesPlus.getStorageHandler().getFlatConfig().isSet("Crate Locations." + this.getName(false).toLowerCase()))
-            locations = cratesPlus.getStorageHandler().getFlatConfig().getStringList("Crate Locations." + this.getName(false).toLowerCase());
-        locations.add(location.getWorld().getName() + "|" + location.getBlockX() + "|" + location.getBlockY() + "|" + location.getBlockZ());
-        cratesPlus.getStorageHandler().getFlatConfig().set("Crate Locations." + this.getName(false).toLowerCase(), locations);
-        cratesPlus.getStorageHandler().saveFlat();
+        getCratesPlus().getStorageHandler().addCrateLocation(this.getName(false).toLowerCase(), location);
     }
 
     public boolean give(OfflinePlayer offlinePlayer, Integer amount) {

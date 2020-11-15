@@ -16,10 +16,10 @@ import java.util.*;
  * @version 4.0
  */
 public class GUI {
-    public static HashMap<UUID, GUI> guis = new HashMap<>();
-    public static HashMap<UUID, Integer> pageTracker = new HashMap<>();
-    public static ArrayList<UUID> ignoreClosing = new ArrayList<>();
-    private static final HashMap<Integer, Integer> itemMapping = new HashMap<Integer, Integer>() {{
+    public static Map<UUID, GUI> guis = new HashMap<>();
+    public static Map<UUID, Integer> pageTracker = new HashMap<>();
+    public static List<UUID> ignoreClosing = new ArrayList<>();
+    private static final Map<Integer, Integer> itemMapping = new HashMap<Integer, Integer>() {{
         put(0, 10);
         put(1, 11);
         put(2, 12);
@@ -44,8 +44,8 @@ public class GUI {
     }};
 
     private String title;
-    private NavigableMap<Integer, ItemStack> items = new TreeMap<>();
-    private HashMap<Integer, ClickHandler> clickHandlers = new HashMap<>();
+    private final NavigableMap<Integer, ItemStack> items = new TreeMap<>();
+    private final Map<Integer, ClickHandler> clickHandlers = new HashMap<>();
     private ClickHandler goBackHandler = null;
     private boolean showPages = false;
 

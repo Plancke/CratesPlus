@@ -15,11 +15,12 @@ import plus.crates.Events.CrateOpenEvent;
 import plus.crates.Handlers.MessageHandler;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerInteract implements Listener {
-    private CratesPlus cratesPlus;
-    private HashMap<String, Long> lastOpended = new HashMap<String, Long>();
+    private final CratesPlus cratesPlus;
+    private final Map<String, Long> lastOpended = new HashMap<>();
 
     public PlayerInteract(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;
