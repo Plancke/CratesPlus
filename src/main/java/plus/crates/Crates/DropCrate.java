@@ -13,20 +13,19 @@ import plus.crates.Handlers.ConfigHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Drop it like it's hot!
  */
 public class DropCrate extends SupplyCrate implements Listener {
-    private Random rand = new Random();
-    private List<Location> drops = new ArrayList<>();
+    private final List<Location> drops = new ArrayList<>();
     private List<String> worlds = new ArrayList<>();
-    private Integer minSpawnInterval = 60 * 60; // 1 Hour
-    private Integer maxSpawnInterval = 120 * 60; // 2 Hours
-    private Integer radiusClosestToPlayer = 300; // will spawn 300 blocks close to a player TODO Make this and any others configurable!
-    private Integer despawnTimer = 30 * 60; // will despawn after 30 minutes if nobody has found it
-    private Integer minPlayers = 2;
+    private int minSpawnInterval = 60 * 60; // 1 Hour
+    private int maxSpawnInterval = 120 * 60; // 2 Hours
+    private int radiusClosestToPlayer = 300; // will spawn 300 blocks close to a player TODO Make this and any others configurable!
+    private int despawnTimer = 30 * 60; // will despawn after 30 minutes if nobody has found it
+    private int minPlayers = 2;
 
     public DropCrate(ConfigHandler configHandler, String name) {
         super(configHandler, name);
@@ -54,7 +53,7 @@ public class DropCrate extends SupplyCrate implements Listener {
     }
 
     private void startTimer() {
-        Integer timer = randInt(minSpawnInterval, maxSpawnInterval);
+        int timer = ThreadLocalRandom.current().nextInt(minSpawnInterval, maxSpawnInterval + 1);
         // TODO Use a debug option to show this?
         getCratesPlus().getLogger().info("Will attempt to drop crate \"" + getName() + "\" in " + timer + " seconds!");
         // TODO Should we validate the config first? I feel like we should...
@@ -69,22 +68,25 @@ public class DropCrate extends SupplyCrate implements Listener {
 
         List<String> worlds = new ArrayList<>();
         for (String worldName : this.worlds) {
-            if (Bukkit.getWorld(worldName) == null)
-                continue;
-            if (Bukkit.getWorld(worldName).getPlayers().size() < minPlayers)
-                continue; // No players in world
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) continue;
+
+            // No players in world
+            if (world.getPlayers().size() < minPlayers) continue;
+
             worlds.add(worldName);
         }
 
-        if (worlds.isEmpty()) {
-            return; // No world with players found :(
-        }
+        // No world with players found :(
+        if (worlds.isEmpty()) return;
 
-        World world = Bukkit.getWorld(worlds.get(randInt(0, worlds.size() - 1)));
-        Player player = world.getPlayers().get(randInt(0, world.getPlayers().size() - 1)); // Get random player to spawn crate near
+        World world = Bukkit.getWorld(worlds.get(ThreadLocalRandom.current().nextInt(worlds.size())));
+        if (world == null) return;
+
+        Player player = world.getPlayers().get(ThreadLocalRandom.current().nextInt(world.getPlayers().size())); // Get random player to spawn crate near
         Location location = player.getLocation().clone();
-        double randomX = randInt((int) location.getX() - radiusClosestToPlayer, (int) location.getX() + radiusClosestToPlayer);
-        double randomZ = randInt((int) location.getZ() - radiusClosestToPlayer, (int) location.getZ() + radiusClosestToPlayer);
+        double randomX = ThreadLocalRandom.current().nextInt((int) location.getX() - radiusClosestToPlayer, (int) location.getX() + radiusClosestToPlayer+1);
+        double randomZ = ThreadLocalRandom.current().nextInt((int) location.getZ() - radiusClosestToPlayer, (int) location.getZ() + radiusClosestToPlayer + 1);
         location.setX(randomX);
         location.setZ(randomZ);
         location = world.getHighestBlockAt(location).getLocation().clone().add(0, 0, 0);
@@ -104,13 +106,9 @@ public class DropCrate extends SupplyCrate implements Listener {
                         drops.remove(finalLocation);
                         finalLocation.getBlock().setType(Material.AIR);
                     }
-                }, despawnTimer * 20);
+                }, despawnTimer * 20L);
             }
         }
-    }
-
-    private int randInt(int min, int max) {
-        return rand.nextInt((max - min) + 1) + min;
     }
 
     private void openCrate(Player player, Location location) {

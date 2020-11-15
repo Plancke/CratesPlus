@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Crate {
     protected final ConfigHandler configHandler;
@@ -253,7 +254,7 @@ public abstract class Crate {
             }
             winning = winnings.get(randomIndex);
         } else {
-            winning = getWinningsExcludeAlways().get(CratesPlus.getOpenHandler().getCratesPlus().getCrateHandler().randInt(0, getWinningsExcludeAlways().size() - 1));
+            winning = getWinningsExcludeAlways().get(ThreadLocalRandom.current().nextInt(getWinningsExcludeAlways().size()));
         }
         return winning;
     }

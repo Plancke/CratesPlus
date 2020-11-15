@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import plus.crates.Crates.Crate;
@@ -20,13 +21,15 @@ import plus.crates.Utils.LegacyMaterial;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BasicGUIOpener extends Opener implements Listener {
     private CratesPlus cratesPlus;
-    private HashMap<UUID, Integer> tasks = new HashMap<>();
-    private HashMap<UUID, Inventory> guis = new HashMap<>();
+    private Map<UUID, Integer> tasks = new HashMap<>();
+    private Map<UUID, Inventory> guis = new HashMap<>();
     private int length = 5;
     private String rollingText = "Rolling...";
     private String winnerText = "Winner!";
@@ -90,10 +93,10 @@ public class BasicGUIOpener extends Opener implements Listener {
     @Override
     public void doOpen(final Player player, final Crate crate, Location blockLocation) {
         final Inventory winGUI;
-        final Integer[] timer = {0};
-        final Integer[] currentItem = new Integer[1];
+        final int[] timer = {0};
+        final int[] currentItem = new int[1];
 
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         int max = crate.getWinnings().size() - 1;
         int min = 0;
         currentItem[0] = random.nextInt((max - min) + 1) + min;
@@ -109,7 +112,7 @@ public class BasicGUIOpener extends Opener implements Listener {
                 Bukkit.getScheduler().cancelTask(tasks.get(player.getUniqueId()));
                 return;
             }
-            Integer i = 0;
+            int i = 0;
             while (i < 45) {
                 if (i == 22) {
                     i++;
@@ -128,7 +131,7 @@ public class BasicGUIOpener extends Opener implements Listener {
                     currentItem[0]++;
                     continue;
                 }
-                ItemStack itemStack = new ItemStack(LegacyMaterial.STAINED_GLASS_PANE.getMaterial(), 1, (short) cratesPlus.getCrateHandler().randInt(0, 15));
+                ItemStack itemStack = new ItemStack(LegacyMaterial.STAINED_GLASS_PANE.getMaterial(), 1, (short) ThreadLocalRandom.current().nextInt(0, 15));
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 if (timer[0] == maxTimeTicks) {
                     itemMeta.setDisplayName(ChatColor.RESET + winnerText);
@@ -146,7 +149,8 @@ public class BasicGUIOpener extends Opener implements Listener {
                         }
                         final Sound finalSound = sound;
                         Bukkit.getScheduler().runTask(cratesPlus, () -> {
-                            if (player.getOpenInventory().getTitle() != null && player.getOpenInventory().getTitle().contains(" Win"))
+                            InventoryView inventory = player.getOpenInventory();
+                            if (inventory.getTitle().contains(" Win"))
                                 player.playSound(player.getLocation(), finalSound, (float) 0.2, 2);
                         });
                     }

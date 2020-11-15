@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SupplyCrate extends Crate {
     protected List<String> lore = null;
@@ -92,7 +93,7 @@ public class SupplyCrate extends Crate {
         }
 
         // By default run win on the last win and give item
-        int wins_amount = getCratesPlus().getCrateHandler().randInt(minimum, maximum);
+        int wins_amount = ThreadLocalRandom.current().nextInt(minimum, maximum + 1);
         for (int i = 0; i < wins_amount; i++) {
             Winning winning = getRandomWinning();
             ItemStack itemStack = winning.runWin(player);
@@ -104,8 +105,9 @@ public class SupplyCrate extends Crate {
         if (blockPlaced.getType().equals(Material.CHEST) || blockPlaced.getType().equals(Material.TRAPPED_CHEST)) {
             Chest chest = (Chest) blockPlaced.getState();
             for (ItemStack itemStack1 : itemStacks) {
-                int random = getCratesPlus().getCrateHandler().randInt(0, 26);
-                if (chest.getInventory().getItem(random) == null || chest.getInventory().getItem(random).getType().equals(Material.AIR)) {
+                int random = ThreadLocalRandom.current().nextInt(0, 27); // TODO support bigger chests?
+                ItemStack item = chest.getInventory().getItem(random);
+                if (item == null || item.getType().equals(Material.AIR)) {
                     chest.getInventory().setItem(random, itemStack1);
                 } else {
                     chest.getInventory().addItem(itemStack1);

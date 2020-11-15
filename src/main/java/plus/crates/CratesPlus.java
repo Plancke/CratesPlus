@@ -9,8 +9,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import plus.crates.Commands.CrateCommand;
 import plus.crates.Crates.Crate;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +43,7 @@ public class CratesPlus extends JavaPlugin implements Listener {
     private String bukkitVersion = "0.0";
     private Version_Util version_util;
     private static OpenHandler openHandler;
-    private ArrayList<UUID> creatingCrate = new ArrayList<>();
+    private final List<UUID> creatingCrate = new ArrayList<>();
 
     public void onEnable() {
         Server server = getServer();
@@ -202,21 +202,21 @@ public class CratesPlus extends JavaPlugin implements Listener {
         if (!file.exists())
             return null;
         LineIterator it;
-        String lines = "";
+        StringBuilder lines = new StringBuilder();
         try {
             it = FileUtils.lineIterator(file, "UTF-8");
             try {
                 while (it.hasNext()) {
                     String line = it.nextLine();
-                    lines += line + "\n";
+                    lines.append(line).append("\n");
                 }
             } finally {
                 it.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "failed to upload file", e);
         }
-        return MCDebug.paste(fileName, lines);
+        return MCDebug.paste(fileName, lines.toString());
     }
 
     private void checkUpdate(final ConsoleCommandSender console) {
@@ -257,7 +257,6 @@ public class CratesPlus extends JavaPlugin implements Listener {
 
         if (updateMessage != null)
             console.sendMessage(updateMessage);
-
     }
 
     public void reloadPlugin() {
@@ -275,22 +274,22 @@ public class CratesPlus extends JavaPlugin implements Listener {
     }
 
     private void loadMetaData() {
-        if (!getStorageHandler().getFlatConfig().isSet("Crate Locations"))
-            return;
-        for (String name : getStorageHandler().getFlatConfig().getConfigurationSection("Crate Locations").getKeys(false)) {
-            final Crate crate = configHandler.getCrate(name.toLowerCase());
-            if (crate == null)
-                continue;
-            if (!(crate instanceof KeyCrate))
-                continue;
+        YamlConfiguration flatConfig = getStorageHandler().getFlatConfig();
+        if (!flatConfig.isSet("Crate Locations")) return;
+
+        //noinspection ConstantConditions
+        for (String name : flatConfig.getConfigurationSection("Crate Locations").getKeys(false)) {
+            Crate crate = configHandler.getCrate(name.toLowerCase());
+            if (crate == null) continue;
+
+            if (!(crate instanceof KeyCrate)) continue;
             KeyCrate keyCrate = (KeyCrate) crate;
             String path = "Crate Locations." + name;
-            List<String> locations = getStorageHandler().getFlatConfig().getStringList(path);
+            List<String> locations = flatConfig.getStringList(path);
 
             for (String location : locations) {
                 List<String> strings = Arrays.asList(location.split("\\|"));
-                if (strings.size() < 4)
-                    continue; // Somethings broke?
+                if (strings.size() < 4) continue; // Somethings broke?
                 if (strings.size() > 4) {
                     // Somethings broke? But we'll try and fix it!
                     for (int i = 0; i < strings.size(); i++) {
@@ -299,76 +298,28 @@ public class CratesPlus extends JavaPlugin implements Listener {
                         }
                     }
                 }
-                Location locationObj;
-                try {
-                    locationObj = new Location(Bukkit.getWorld(strings.get(0)), Double.parseDouble(strings.get(1)), Double.parseDouble(strings.get(2)), Double.parseDouble(strings.get(3)));
-                    Block block = locationObj.getBlock();
-                    if (block == null || block.getType().equals(Material.AIR)) {
-                        getLogger().warning("No block found at " + location + " removing from data.yml");
-                        keyCrate.removeFromConfig(locationObj);
-                        continue;
-                    }
-                    Location location1 = locationObj.getBlock().getLocation().add(0.5, 0.5, 0.5);
-                    keyCrate.loadHolograms(location1);
-                    final CratesPlus cratesPlus = this;
-                    block.setMetadata("CrateType", new MetadataValue() {
-                        @Override
-                        public Object value() {
-                            return crate.getName(false);
-                        }
 
-                        @Override
-                        public int asInt() {
-                            return 0;
-                        }
-
-                        @Override
-                        public float asFloat() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double asDouble() {
-                            return 0;
-                        }
-
-                        @Override
-                        public long asLong() {
-                            return 0;
-                        }
-
-                        @Override
-                        public short asShort() {
-                            return 0;
-                        }
-
-                        @Override
-                        public byte asByte() {
-                            return 0;
-                        }
-
-                        @Override
-                        public boolean asBoolean() {
-                            return false;
-                        }
-
-                        @Override
-                        public String asString() {
-                            return value().toString();
-                        }
-
-                        @Override
-                        public Plugin getOwningPlugin() {
-                            return cratesPlus;
-                        }
-
-                        @Override
-                        public void invalidate() {
-
-                        }
-                    });
-                } catch (Exception ignored) {
+                World world = Bukkit.getWorld(strings.get(0));
+                if (world == null) {
+                    getLogger().warning("No world found for " + strings);
+                    return; // TODO figure out how we wanna handle this
                 }
+                Location locationObj = new Location(
+                        world,
+                        Double.parseDouble(strings.get(1)),
+                        Double.parseDouble(strings.get(2)),
+                        Double.parseDouble(strings.get(3))
+                );
+                Block block = locationObj.getBlock();
+                if (block.getType().equals(Material.AIR)) {
+                    getLogger().warning("No block found at " + location + " removing from data.yml");
+                    keyCrate.removeFromConfig(locationObj);
+                    continue;
+                }
+                Location location1 = locationObj.getBlock().getLocation().add(0.5, 0.5, 0.5);
+                keyCrate.loadHolograms(location1);
+                final CratesPlus cratesPlus = this;
+                block.setMetadata("CrateType", new FixedMetadataValue(cratesPlus, crate.getName(false)));
             }
 
 

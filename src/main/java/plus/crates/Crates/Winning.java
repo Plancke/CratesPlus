@@ -17,6 +17,7 @@ import plus.crates.Utils.LinfootUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -261,8 +262,8 @@ public class Winning {
                 String start = randMatches.group(1);
                 String end = randMatches.group(2);
                 try {
-                    if (start != null && Integer.valueOf(start) != null && end != null && Integer.valueOf(end) != null) {
-                        int val = cratesPlus.getCrateHandler().randInt(Integer.valueOf(start), Integer.valueOf(end));
+                    if (start != null && end != null) {
+                        int val = ThreadLocalRandom.current().nextInt(Integer.parseInt(start), Integer.parseInt(end));
                         command = command.replaceAll("%rand;" + start + "," + end + "%", String.valueOf(val)).replaceAll("%rand;" + start + ";" + end + "%", String.valueOf(val));
                     }
                 } catch (Exception ignored) {

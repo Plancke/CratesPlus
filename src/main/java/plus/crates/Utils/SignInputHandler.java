@@ -32,13 +32,14 @@ public class SignInputHandler {
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
             final Channel channel = (Channel) channelField.get(playerConnection.getClass().getField("networkManager").get(playerConnection));
             if (channel != null) {
+                Class signPacketClass = ReflectionUtil.getNMSClass("PacketPlayInUpdateSign");
                 channel.pipeline().addAfter("decoder", "update_sign", new MessageToMessageDecoder<Object>() {
                     @Override
-                    protected void decode(ChannelHandlerContext channelHandlerContext, Object object, List list) throws Exception {
+                    protected void decode(ChannelHandlerContext channelHandlerContext, Object object, List list) {
                         try {
-                            if (object.toString().contains("PacketPlayInUpdateSign")) {
+                            if (signPacketClass.isAssignableFrom(object.getClass())) {
                                 Class iChatBaseComponentClass = ReflectionUtil.getNMSClass("IChatBaseComponent");
-                                Object packet = ReflectionUtil.getNMSClass("PacketPlayInUpdateSign").cast(object);
+                                Object packet = signPacketClass.cast(object);
                                 Method method = null;
 
                                 try {

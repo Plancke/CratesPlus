@@ -42,7 +42,7 @@ public class CrateCommand implements CommandExecutor {
     public boolean onCommand(final CommandSender sender, Command command, String string, String[] args) {
 
         if (sender instanceof Player && !sender.hasPermission("cratesplus.admin")) {
-            if (args.length == 0 || (args.length > 0 && args[0].equalsIgnoreCase("claim"))) {
+            if (args.length == 0 || args[0].equalsIgnoreCase("claim")) {
                 // Assume player and show "claim" GUI
                 doClaim((Player) sender);
                 return true;
@@ -123,14 +123,14 @@ public class CrateCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.AQUA + "Uploaded messages.yml");
 
                         sender.sendMessage(ChatColor.AQUA + "Generating plugin list...");
-                        String plugins = "";
+                        StringBuilder plugins = new StringBuilder();
                         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                            plugins += plugin.getName() + " - Version: " + plugin.getDescription().getVersion() + "\n";
+                            plugins.append(plugin.getName()).append(" - Version: ").append(plugin.getDescription().getVersion()).append("\n");
                         }
                         sender.sendMessage(ChatColor.AQUA + "Completed plugin list");
 
                         sender.sendMessage(ChatColor.AQUA + "Uploading plugin list...");
-                        String pluginsLink = MCDebug.paste("plugins.txt", plugins);
+                        String pluginsLink = MCDebug.paste("plugins.txt", plugins.toString());
                         sender.sendMessage(ChatColor.AQUA + "Uploaded plugin list");
 
                         sender.sendMessage(ChatColor.AQUA + "Uploading data to MC Debug...");
@@ -354,7 +354,7 @@ public class CrateCommand implements CommandExecutor {
                     OfflinePlayer offlinePlayer = null;
                     if (!args[1].equalsIgnoreCase("all") && !args[1].equalsIgnoreCase("alloffline")) {
                         offlinePlayer = Bukkit.getOfflinePlayer(args[1]);
-                        if (offlinePlayer == null || (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline())) { // Check if the player is online as "hasPlayedBefore" doesn't work until they disconnect?
+                        if (!offlinePlayer.hasPlayedBefore() && !offlinePlayer.isOnline()) { // Check if the player is online as "hasPlayedBefore" doesn't work until they disconnect?
                             sender.sendMessage(cratesPlus.getPluginPrefix() + ChatColor.RED + "The player " + args[1] + " was not found");
                             return false;
                         }
@@ -453,7 +453,7 @@ public class CrateCommand implements CommandExecutor {
             return;
         }
         GUI gui = new GUI("Claim Crate Keys");
-        Integer i = 0;
+        int i = 0;
         for (Map.Entry<String, Integer> map : cratesPlus.getCrateHandler().getPendingKey(player.getUniqueId()).entrySet()) {
             final String crateName = map.getKey();
             final KeyCrate crate = (KeyCrate) cratesPlus.getConfigHandler().getCrates().get(crateName.toLowerCase());

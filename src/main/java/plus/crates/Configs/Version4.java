@@ -33,7 +33,7 @@ public class Version4 extends ConfigVersion {
                     if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName())
                         getConfig().set("Crates." + name + ".Winnings." + count + ".Name", itemStack.getItemMeta().getDisplayName());
 
-                    ArrayList<String> enchantments = new ArrayList<String>();
+                    List<String> enchantments = new ArrayList<>();
                     for (Map.Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
                         Enchantment enchantment = entry.getKey();
                         Integer level = entry.getValue();
@@ -46,7 +46,7 @@ public class Version4 extends ConfigVersion {
                     }
                     getConfig().set("Crates." + name + ".Winnings." + count + ".Enchantments", enchantments);
 
-                    ArrayList<String> commands = new ArrayList<String>();
+                    ArrayList<String> commands = new ArrayList<>();
                     commands.add(itemStack.getItemMeta().getDisplayName().replaceAll("Command: /", ""));
                     getConfig().set("Crates." + name + ".Winnings." + count + ".Commands", commands);
 
@@ -63,7 +63,7 @@ public class Version4 extends ConfigVersion {
                     if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName())
                         getConfig().set("Crates." + name + ".Winnings." + count + ".Name", itemStack.getItemMeta().getDisplayName());
 
-                    ArrayList<String> enchantments = new ArrayList<String>();
+                    ArrayList<String> enchantments = new ArrayList<>();
                     for (Map.Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
                         Enchantment enchantment = entry.getKey();
                         Integer level = entry.getValue();
