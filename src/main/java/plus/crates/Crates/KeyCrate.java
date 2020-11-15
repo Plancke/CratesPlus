@@ -13,6 +13,7 @@ import plus.crates.Utils.GUI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class KeyCrate extends Crate {
     protected Key key;
@@ -84,11 +85,21 @@ public class KeyCrate extends Crate {
     }
 
     public void removeFromConfig(Location location) {
-        getCratesPlus().getStorageHandler().removeCrateLocation(this.getName(false).toLowerCase(), location);
+        getCratesPlus().getStorageHandler()
+                .removeCrateLocation(this.getName(false).toLowerCase(), location)
+                .exceptionally(throwable -> {
+                    getCratesPlus().getLogger().log(Level.SEVERE, "Unhandled Exception", throwable);
+                    return null;
+                });
     }
 
     public void addToConfig(Location location) {
-        getCratesPlus().getStorageHandler().addCrateLocation(this.getName(false).toLowerCase(), location);
+        getCratesPlus().getStorageHandler()
+                .addCrateLocation(this.getName(false).toLowerCase(), location)
+                .exceptionally(throwable -> {
+                    getCratesPlus().getLogger().log(Level.SEVERE, "Unhandled Exception", throwable);
+                    return null;
+                });
     }
 
     public boolean give(OfflinePlayer offlinePlayer, Integer amount) {

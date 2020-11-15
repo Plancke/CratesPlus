@@ -53,7 +53,7 @@ public class MysteryCrate extends Crate {
         itemMeta.setDisplayName(itemTitle != null ? itemTitle : getName(true));
         itemStack.setItemMeta(itemMeta);
 
-        Integer count = (Integer) cratesPlus.getStorageHandler().getPlayerData(player.getUniqueId(), "Crates-" + getName(false));
+        Integer count = cratesPlus.getStorageHandler().getPlayerData(player.getUniqueId(), "Crates-" + getName(false)).join(); // TODO
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 final int finalI = i;

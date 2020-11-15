@@ -1,7 +1,6 @@
 package plus.crates.Handlers;
 
 import org.bukkit.*;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -30,7 +29,7 @@ public class CrateHandler {
     public CrateHandler(CratesPlus cratesPlus) {
         this.cratesPlus = cratesPlus;
 
-        Map<UUID, Map<String, Integer>> pendingKeysData = cratesPlus.getStorageHandler().getPendingKeys();
+        Map<UUID, Map<String, Integer>> pendingKeysData = cratesPlus.getStorageHandler().getPendingKeys().join(); // todo
         if (pendingKeysData != null) {
             pendingKeys.putAll(pendingKeysData);
         }

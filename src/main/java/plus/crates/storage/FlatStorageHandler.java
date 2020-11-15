@@ -7,6 +7,7 @@ import plus.crates.CratesPlus;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class FlatStorageHandler implements IStorageHandler {
@@ -47,44 +48,83 @@ public class FlatStorageHandler implements IStorageHandler {
         }
     }
 
-    public Object getPlayerData(UUID uuid, String key) {
-        return flatConfig.get("Player." + uuid.toString() + "." + key, null);
-    }
-
-    public void setPlayerData(UUID uuid, String key, String value) {
-        flatConfig.set("Player." + uuid.toString() + "." + key, value);
-        saveFlat();
-    }
-
-    public void incPlayerData(UUID uuid, String key, Integer value) {
-        int current = flatConfig.getInt("Player." + uuid.toString() + "." + key, 0);
-        if (value > 0) {
-            current += value;
-        } else if (value < 0) {
-            current -= value;
+    public CompletableFuture<Integer> getPlayerData(UUID uuid, String key) {
+        try {
+            return CompletableFuture.completedFuture(flatConfig.getInt("Player." + uuid.toString() + "." + key));
+        } catch (Throwable throwable) {
+            CompletableFuture<Integer> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
         }
-        flatConfig.set("Player." + uuid.toString() + "." + key, current);
-        saveFlat();
+    }
+
+    public CompletableFuture<Void> setPlayerData(UUID uuid, String key, String value) {
+        try {
+            flatConfig.set("Player." + uuid.toString() + "." + key, value);
+            saveFlat();
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Throwable throwable) {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
+    }
+
+    public CompletableFuture<Void> incPlayerData(UUID uuid, String key, Integer value) {
+        try {
+            int current = flatConfig.getInt("Player." + uuid.toString() + "." + key, 0);
+            if (value > 0) {
+                current += value;
+            } else if (value < 0) {
+                current -= value;
+            }
+            flatConfig.set("Player." + uuid.toString() + "." + key, current);
+            saveFlat();
+
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Throwable throwable) {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
     }
 
     @Override
-    public void removeCrateLocation(String crate, Location location) {
-        List<String> locations = getLocations(crate);
+    public CompletableFuture<Void> removeCrateLocation(String crate, Location location) {
+        try {
+            List<String> locations = getLocations(crate);
 
-        if (locations != null) locations.remove(formatLocation(location));
+            if (locations != null) locations.remove(formatLocation(location));
 
-        flatConfig.set("Crate Locations." + crate, locations);
-        saveFlat();
+            flatConfig.set("Crate Locations." + crate, locations);
+            saveFlat();
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Throwable throwable) {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
     }
 
     @Override
-    public void addCrateLocation(String crate, Location location) {
-        List<String> locations = getLocations(crate);
+    public CompletableFuture<Void> addCrateLocation(String crate, Location location) {
+        try {
+            List<String> locations = getLocations(crate);
 
-        if (locations != null) locations.remove(formatLocation(location));
+            if (locations != null) locations.remove(formatLocation(location));
 
-        flatConfig.set("Crate Locations." + crate, locations);
-        saveFlat();
+            flatConfig.set("Crate Locations." + crate, locations);
+            saveFlat();
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Throwable throwable) {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
     }
 
     private List<String> getLocations(String crate) {
@@ -98,39 +138,55 @@ public class FlatStorageHandler implements IStorageHandler {
     }
 
     @Override
-    public Map<UUID, Map<String, Integer>> getPendingKeys() {
-        if (!flatConfig.isSet("Claims")) return null;
+    public CompletableFuture<Map<UUID, Map<String, Integer>>> getPendingKeys() {
+        try {
+            if (!flatConfig.isSet("Claims"))
+                return CompletableFuture.completedFuture(null);
 
-        Map<UUID, Map<String, Integer>> map = new HashMap<>();
-        for (String uuidStr : flatConfig.getConfigurationSection("Claims").getKeys(false)) {
-            List<String> dataList = flatConfig.getStringList("Claims." + uuidStr);
-            if (dataList.isEmpty()) continue;
+            Map<UUID, Map<String, Integer>> map = new HashMap<>();
+            for (String uuidStr : flatConfig.getConfigurationSection("Claims").getKeys(false)) {
+                List<String> dataList = flatConfig.getStringList("Claims." + uuidStr);
+                if (dataList.isEmpty()) continue;
 
-            Map<String, Integer> keys = new HashMap<>();
-            for (String data : dataList) {
-                String[] args = data.split("\\|");
-                if (args.length == 1) {
-                    keys.put(args[0], 1);
-                } else {
-                    keys.put(args[0], Integer.valueOf(args[1]));
+                Map<String, Integer> keys = new HashMap<>();
+                for (String data : dataList) {
+                    String[] args = data.split("\\|");
+                    if (args.length == 1) {
+                        keys.put(args[0], 1);
+                    } else {
+                        keys.put(args[0], Integer.valueOf(args[1]));
+                    }
                 }
+
+                map.put(UUID.fromString(uuidStr), keys);
             }
 
-            map.put(UUID.fromString(uuidStr), keys);
-        }
+            return CompletableFuture.completedFuture(map);
 
-        return map;
+        } catch (Throwable throwable) {
+            CompletableFuture<Map<UUID, Map<String, Integer>>> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
     }
 
     @Override
-    public void updateKeysData(UUID uuid, Map<String, Integer> keys) {
-        List<String> data = new ArrayList<>();
-        for (Map.Entry<String, Integer> key : keys.entrySet()) {
-            data.add(key.getKey() + "|" + key.getValue());
-        }
+    public CompletableFuture<Void> updateKeysData(UUID uuid, Map<String, Integer> keys) {
+        try {
+            List<String> data = new ArrayList<>();
+            for (Map.Entry<String, Integer> key : keys.entrySet()) {
+                data.add(key.getKey() + "|" + key.getValue());
+            }
 
-        flatConfig.set("Claims." + uuid.toString(), data);
-        saveFlat();
+            flatConfig.set("Claims." + uuid.toString(), data);
+            saveFlat();
+
+            return CompletableFuture.completedFuture(null);
+        } catch (Throwable throwable) {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(throwable);
+            return future;
+        }
     }
 
 }
